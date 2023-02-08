@@ -13,7 +13,7 @@ const MovieList = (props) => {
     >
   
         {
-             props.movies.map((movie,i)=>(
+             props.movies.map((movie)=>(
                 <SwiperSlide className='slider-box'> 
                 <div className='image-box'>
                 <img src={movie.Poster} alt='movie'></img>
