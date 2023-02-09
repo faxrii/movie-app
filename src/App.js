@@ -22,35 +22,41 @@ function App() {
       getMovie();
     }
   };
-  const addFavouriteMovie = (movie) => {
-    const newFavouriteList = [...favourites, movie];
+  // const addFavouriteMovie = (movie) => {
+  //   // const newFavouriteList = [...favourites, movie];
+
     
-    if (favourites.length > 0) {
-      for (let i = 0; i < favourites.length; i++) {
-        // console.log(movie.imdbID,favourites[i].imdbID);
-        if ( movie.imdbID == favourites[i].imdbID) {
-          
-          setFavourites(newFavouriteList);
-          saveLocalStorage(newFavouriteList);
-        }
-        else{
-          console.log(false)
-        }
-      }
-    } 
-    else {
-      setFavourites(newFavouriteList);
-      saveLocalStorage(newFavouriteList);
+  //   if (favourites.length > 0) {
+   
+  //     for (let i = 0; i < favourites.length; i++) {
+  //       if (movie.imdbID !== favourites[i].imdbID) {
+  //         console.log(favourites, '1');
+  //         setFavourites([...favourites, movie]);
+  //         saveLocalStorage([...favourites, movie]);
+  //       }
+  //     }
+  //   } else {
+  //     console.log(favourites, '3');
+  //     setFavourites([...favourites, movie]);
+  //     saveLocalStorage([...favourites, movie]);
+  //   }
+  // };
+
+  const addFavouriteMovie = (movie) => {
+    const existingMovie = favourites.find(favourite => favourite.imdbID === movie.imdbID);
+    if (!existingMovie) {
+      const newFavourites = [...favourites, movie];
+      setFavourites(newFavourites);
+      saveLocalStorage(newFavourites);
     }
   };
 
   const removeFavouriteMovie = (movie) => {
-    const newFavouriteList = favourites.filter(
+    const newFavourites = favourites.filter(
       (favourite) => favourite.imdbID !== movie.imdbID
     );
-
-    setFavourites(newFavouriteList);
-    saveLocalStorage(newFavouriteList);
+    setFavourites(newFavourites);
+    saveLocalStorage(newFavourites);
   };
 
   const saveLocalStorage = (items) => {
@@ -69,7 +75,9 @@ function App() {
     const movieFavourites = JSON.parse(
       localStorage.getItem("react-movie-app-favourites")
     );
-    setFavourites(movieFavourites);
+    if (movieFavourites?.length > 0) {
+      setFavourites(movieFavourites);
+    }
   }, []);
   return (
     <>
@@ -80,21 +88,28 @@ function App() {
         </div>
 
         <div className="all-movie-list">
-          <MovieList
-            movies={movies}
-            handleFavouriteMovie={addFavouriteMovie}
-            favouriteComponent={AddFavourite}
-          />
+          {movies && (
+            <MovieList
+              movies={movies}
+              handleFavouriteMovie={addFavouriteMovie}
+              favouriteComponent={AddFavourite}
+            />
+          )}
         </div>
 
-        <div className="favourites-list">
-          <MovieSearchList heading="Favourites" />
-          <MovieList
-            movies={favourites}
-            favouriteComponent={RemoveFavourite}
-            handleFavouriteMovie={removeFavouriteMovie}
-          />
-        </div>
+        {favourites && (
+          <div className="favourites-list">
+            <MovieSearchList heading="Favourites" />
+
+            {favourites?.length > 0 && (
+              <MovieList
+                movies={favourites}
+                favouriteComponent={RemoveFavourite}
+                handleFavouriteMovie={removeFavouriteMovie}
+              />
+            )}
+          </div>
+        )}
       </div>
     </>
   );
